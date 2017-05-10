@@ -2,7 +2,7 @@ package main
 
 import (
 	//"time"
-	"goforward/forwarder"
+	"go-forward/forwarder"
 )
 
 func main() {

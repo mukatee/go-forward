@@ -12,7 +12,16 @@ You could rename it whatever you like of course..
 Download
 --------
 
-I shall try to set up a Github releases page. Until then, get the source and compile it. Eh?
+I shall try to set up a Github releases page. Until then, get the source and compile it.
+
+Should be something along the lines of:
+
+```shell
+go get -u github.com/mukatee/go-forward
+go install github.com/mukatee/go-forward
+```
+
+Then find the exe/bin files in your GOPATH/bin dir.
 
 Command line options
 --------------------
@@ -63,29 +72,41 @@ Then to request the data via the forwarder:
 curl localhost:5566 --header 'Host: stackoverflow.com'
 ```
 
-Notice that the start command uses www.stackoverflow.com and the curl uses the host header of stackoverflow.com.
-The initial one just uses that to capture the site address, which is the same for both.
-But if you request the site from curl with www.stackoverflow.com host header, you will get back a redirect response
-to go to http://stackoverflow.com. 
-You can actually try that by adding the www prefix to the host header in curl.
-The host header is required because that is what the webserver uses to associate the request to resources.
-Browsers do it automatically as does curl but since from their viewpoint the host is localhost:5566, the webserver
-will give an error without explicitly setting a different host header.
+The host header is required because the webserver uses it to associate the request to resources.
+Browsers add it automatically, as does curl, but since curl thinks is is requesting the host at localhost:5566, 
+it will add a host header for "localhost:5566".
+The webserver will then give an error without explicitly setting a different host header as is done here.
 
-Anyway, this is just a workable example to illustrate the use.
-Most websites tend to use HTTPS these days, so you would also need support to MITM SSL here or something like that in those cases.
-Here, curl is just used as an example.
-Personally, I have used this for forwarding some custom network traffic to multiple endpoints.
+This is just a workable example to illustrate the use.
+For HTTPS (used by most sites), a different approach would be needed in any case.
+Curl is just used as a (hopefully) more understandable example.
+Personally, I have mainly used this for forwarding some custom network traffic to multiple endpoints.
 For that, we can specify a mirror address:
 
+Example 2: Forward with mirroring:
 ```shell
 gofwd -dh www.stackoverflow.com -dp 80 -mh localhost -mp 9998 -sp 5566
 ```
 
-This will not forward all the data coming to localhost:5566 not only to stackoverflow.com:80 but also to localhost:9998.
-Sometimes this is handy, for example, I needed to split a datastream from a custom device to two tools that both used it.
-In this case, the stream source only supported one target. So there you go, forwarded it to two places.
-Learned some Go while at it.
+This will now forward all the data coming to localhost:5566, not only to stackoverflow.com:80, but also to localhost:9998.
+Sometimes this is handy.
+For example, I needed to split a datastream from a custom device to two tools that both used it.
+In this case, the stream source only supported one target. 
+So there you go, used this to forward it to two places.
+Probably there are a bunch of command line tools, that I don't know of, to do this already.
+Well, at least I learned some Go while at it.
+
+Few more:
+
+Example 3: Forward with saving upstream data to file:
+```shell
+gofwd -dh www.stackoverflow.com -dp 80 -mh localhost -mp 9998 -sp 5566 -duf uplink.txt
+```
+
+Example 4: Forward with saving upstream and downstream data to files:
+```shell
+gofwd -dh www.stackoverflow.com -dp 80 -mh localhost -mp 9998 -sp 5566 -duf uplink.txt -daf downlink.txt
+```
 
 Limitations
 -----------

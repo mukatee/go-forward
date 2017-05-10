@@ -108,7 +108,7 @@ func ParseConfig() {
 	if len(errors) > 0 {
 		fmt.Print(errors)
 		fmt.Println()
-		fmt.Print("Usage: goforward [options]")
+		fmt.Print("Usage: "+os.Args[0]+" [options]")
 		flagSet.PrintDefaults()
 		os.Exit(1)
 	}
