@@ -9,11 +9,11 @@ import (
 	"os"
 )
 
-const LOGFILE = "gofwd.log"
-
 //stopper exists the main listener loop when set to true
 var stopper bool = false
+//data-log file name for downlink
 var ddf *os.File
+//data-log file name for uplink
 var duf *os.File
 
 //StartServer starts the forwarding server, which listens for connections and forwards them according to configuration
@@ -83,13 +83,6 @@ func debuglog(msg string, v... interface{}) {
 	}
 }
 
-//writes traffic data as string to log file if file is enabled
-func filelog(msg string, v... interface{}) {
-	if Config.logFile != "" {
-		log.Printf(msg, v...)
-	}
-}
-
 //forward() handles forwarding of a given source connection to configured destion/mirror
 func forward(srcConn net.Conn) {
 	//have to defer here as defer waits for surrounding function to return.
@@ -136,6 +129,8 @@ func forward(srcConn net.Conn) {
 	//these are needed to enable channel waits or the defer on the source connection close() executes immediately and breaks all stream forwards
 	fwd1Done := make(chan bool)
 	fwd2Done := make(chan bool)
+	defer close(fwd1Done)
+	defer close(fwd2Done)
 
 	//forward the source data to destination and the mirror, and destination data to the source
 	//only source -> destination traffic is mirrored. not destination -> source. just add the other part if you need
